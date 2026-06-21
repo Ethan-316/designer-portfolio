@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>全部作品 | Works</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    tailwind.config = {darkMode:"class",theme:{extend:{colors:{primary:"#1E293B",accent:"#22C55E"}}}}
+  </script>
+  <style type="text/tailwindcss">
+    @layer utilities {.glass { @apply backdrop-blur-md bg-white/70 dark:bg-primary/80; }.card-hover { @apply transition-all duration-300 hover:-translate-y-2 hover:shadow-xl; }.scroll-smooth { scroll-behavior: smooth; }.fade-in { animation: fadeIn 0.6s ease-out; } @keyframes fadeIn { from {opacity:0;transform:translateY(10px)} to {opacity:1;transform:translateY(0)} }}
+  </style>
+</head>
+<body class="scroll-smooth bg-gray-50 dark:bg-primary dark:text-gray-100">
+<script>
+const SUPABASE_URL = "你的SUPABASE_URL";
+const SUPABASE_ANON_KEY = "你的SUPABASE_ANON_KEY";
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+if(localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) document.documentElement.classList.add('dark')
+</script>
+
+<!-- 复用全局导航 -->
+<nav id="navbar" class="fixed w-full top-0 z-50 glass border-b dark:border-gray-700 transition-all">
+  <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+    <a href="index.html" class="text-2xl font-bold text-accent">DesignPortfolio</a>
+    <div class="hidden md:flex gap-8 items-center">
+      <a href="index.html">首页</a>
+      <a href="works.html" class="text-accent font-medium">全部作品</a>
+      <a href="about.html">关于我</a>
+    </div>
+    <div class="flex gap-4 items-center">
+      <button id="themeSwitch" class="text-xl"><i class="fa fa-moon-o"></i></button>
+      <a href="admin.html" class="text-xs opacity-40 hidden md:block">后台入口</a>
+      <button id="menuBtn" class="md:hidden text-xl"><i class="fa fa-bars"></i></button>
+    </div>
+  </div>
+  <div id="mobileMenu" class="hidden md:hidden px-6 pb-4 flex flex-col gap-4">
+    <a href="index.html">首页</a>
+    <a href="works.html">全部作品</a>
+    <a href="about.html">关于我</a>
+  </div>
+</nav>
+
+<section class="pt-36 pb-12 container mx-auto px-6 fade-in">
+  <h1 class="text-4xl font-bold text-center mb-4">全部作品合集</h1>
+  <p class="text-center text-gray-500 mb-10">全品类商业设计项目，点击卡片查看完整项目细节</p>
+
+  <!-- Works Filter 分类筛选 -->
+  <div class="flex flex-wrap justify-center gap-3 mb-12" id="filterBox">
+    <button class="filter-btn px-5 py-2 rounded-full bg-accent text-white" data-cat="all">全部</button>
+  </div>
+
+  <!-- Works Waterfall List 瀑布流 -->
+  <div id="workWrap" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+
+  <!-- Empty State 空白占位 -->
+  <div id="emptyTip" class="hidden text-center py-20 text-gray-400">
+    <i class="fa fa-folder-open-o text-5xl mb-4"></i>
+    <p>暂无作品内容，请前往管理后台上传项目</p>
+  </div>
+</section>
+
+<!-- 页脚 -->
+<footer class="bg-primary text-white py-16 mt-20">
+  <div class="container mx-auto px-6 text-center text-gray-400">
+    <p>© 2026 设计师作品集 版权所有</p>
+    <a href="index.html" class="block mt-4">返回首页</a>
+  </div>
+</footer>
+
+<script>
+document.getElementById('menuBtn').onclick = ()=>document.getElementById('mobileMenu').classList.toggle('hidden')
+const themeBtn = document.getElementById('themeSwitch');
+themeBtn.onclick = ()=>{
+  document.documentElement.classList.toggle('dark');
+  localStorage.theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+  themeBtn.querySelector('i').className = localStorage.theme === 'dark' ? 'fa fa-sun-o' : 'fa fa-moon-o';
+}
+window.addEventListener('scroll', ()=>{
+  const nav = document.getElementById('navbar');
+  window.scrollY > 50 ? nav.classList.add('shadow-md') : nav.classList.remove('shadow-md');
+})
+
+let allWorks = [];
+async function init(){
+  const {data} = await supabase.from('works').select('*').order('created_at', {asc:false});
+  allWorks = data;
+  if(allWorks.length === 0){
+    document.getElementById('emptyTip').classList.remove('hidden');
+    return;
+  }
+  renderFilter();
+  renderList('all');
+}
+// 渲染分类按钮
+function renderFilter(){
+  const cats = [...new Set(allWorks.map(v=>v.category))];
+  const box = document.getElementById('filterBox');
+  cats.forEach(c=>{
+    const btn = document.createElement('button');
+    btn.className = 'filter-btn px-5 py-2 rounded-full bg-gray-200 dark:bg-gray-700';
+    btn.dataset.cat = c;
+    btn.innerText = c;
+    box.appendChild(btn);
+  })
+  document.querySelectorAll('.filter-btn').forEach(btn=>{
+    btn.onclick = e=>{
+      document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('bg-accent','text-white'));
+      e.target.classList.add('bg-accent','text-white');
+      renderList(e.target.dataset.cat);
+    }
+  })
+}
+// 渲染作品卡片
+function renderList(cat){
+  const wrap = document.getElementById('workWrap');
+  wrap.innerHTML = '';
+  const list = cat === 'all' ? allWorks : allWorks.filter(i=>i.category === cat);
+  list.forEach(item=>{
+    const card = document.createElement('div');
+    card.className = 'bg-white dark:bg-gray-800 rounded-xl overflow-hidden card-hover cursor-pointer fade-in';
+    card.innerHTML = `
+      <img src="${item.cover_img}" class="w-full h-64 object-cover">
+      <div class="p-5">
+        <span class="text-sm text-accent">${item.category}</span>
+        <h3 class="text-lg font-bold mt-2">${item.title}</h3>
+        <p class="text-gray-500 text-sm mt-2 line-clamp-2">${item.description}</p>
+      </div>
+    `;
+    card.onclick = ()=>{
+      localStorage.setItem('currentWork', JSON.stringify(item));
+      location.href = "work-detail.html";
+    }
+    wrap.appendChild(card);
+  })
+}
+init();
+</script>
+</body>
+</html>

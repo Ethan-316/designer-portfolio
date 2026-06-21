@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>作品详情</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    tailwind.config = {darkMode:"class",theme:{extend:{colors:{primary:"#1E293B",accent:"#22C55E"}}}}
+  </script>
+  <style type="text/tailwindcss">
+    @layer utilities {.glass { @apply backdrop-blur-md bg-white/70 dark:bg-primary/80; }.scroll-smooth { scroll-behavior: smooth; }.fade-in { animation: fadeIn 0.6s ease-out; } @keyframes fadeIn { from {opacity:0;transform:translateY(10px)} to {opacity:1;transform:translateY(0)} }}
+  </style>
+</head>
+<body class="scroll-smooth bg-gray-50 dark:bg-primary dark:text-gray-100">
+<script>
+const SUPABASE_URL = "你的SUPABASE_URL";
+const SUPABASE_ANON_KEY = "你的SUPABASE_ANON_KEY";
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+if(localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) document.documentElement.classList.add('dark')
+const workData = JSON.parse(localStorage.getItem('currentWork'));
+if(!workData) location.href = "works.html";
+</script>
+
+<!-- 全局导航 -->
+<nav id="navbar" class="fixed w-full top-0 z-50 glass border-b dark:border-gray-700 transition-all">
+  <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+    <a href="index.html" class="text-2xl font-bold text-accent">DesignPortfolio</a>
+    <div class="hidden md:flex gap-8 items-center">
+      <a href="index.html">首页</a>
+      <a href="works.html">全部作品</a>
+      <a href="about.html">关于我</a>
+    </div>
+    <div class="flex gap-4 items-center">
+      <button id="themeSwitch" class="text-xl"><i class="fa fa-moon-o"></i></button>
+      <button id="menuBtn" class="md:hidden text-xl"><i class="fa fa-bars"></i></button>
+    </div>
+  </div>
+  <div id="mobileMenu" class="hidden md:hidden px-6 pb-4 flex flex-col gap-4">
+    <a href="index.html">首页</a>
+    <a href="works.html">全部作品</a>
+    <a href="about.html">关于我</a>
+  </div>
+</nav>
+
+<main class="pt-36 pb-20 container mx-auto px-6 max-w-4xl fade-in">
+  <!-- Detail Header 详情头部 -->
+  <div class="mb-12">
+    <a href="works.html" class="inline-flex items-center text-accent mb-6"><i class="fa fa-arrow-left mr-2"></i> 返回作品列表</a>
+    <span class="px-3 py-1 bg-accent/10 text-accent rounded-full text-sm">${workData.category}</span>
+    <h1 class="text-4xl font-bold mt-3">${workData.title}</h1>
+    <p class="text-gray-500 mt-4">创作时间：${new Date(workData.created_at).toLocaleDateString()}</p>
+  </div>
+
+  <!-- Project Background 项目背景 -->
+  <section class="mb-14">
+    <h2 class="text-2xl font-bold mb-4 border-l-4 border-accent pl-3">项目背景</h2>
+    <p class="text-gray-600 dark:text-gray-300 leading-relaxed">${workData.description}</p>
+  </section>
+
+  <!-- Design Idea 设计理念与色彩规范 -->
+  <section class="mb-14">
+    <h2 class="text-2xl font-bold mb-4 border-l-4 border-accent pl-3">设计理念与视觉规范</h2>
+    <div class="p-6 bg-white dark:bg-gray-800 rounded-xl">
+      <p class="mb-4">整体采用简约克制视觉语言，统一低饱和配色体系，强化品牌识别性，兼顾线上线下多场景落地适配，在极简留白中突出品牌核心调性，保证视觉高级感与信息可读性平衡。</p>
+      <div class="flex gap-4 mt-6 items-center">
+        <span>主色：</span>
+        <div class="w-12 h-12 rounded bg-[#1E293B]"></div>
+        <span>辅助色：</span>
+        <div class="w-12 h-12 rounded bg-[#22C55E]"></div>
+        <span>中性底色：</span>
+        <div class="w-12 h-12 rounded bg-gray-200 dark:bg-gray-600"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Full Design Display 完整设计稿 -->
+  <section class="mb-14">
+    <h2 class="text-2xl font-bold mb-6 border-l-4 border-accent pl-3">完整设计成品展示</h2>
+    <img src="${workData.cover_img}" class="w-full rounded-xl mb-6 shadow-lg">
+    <div id="detailImgBox"></div>
+  </section>
+
+  <!-- Related Works 同类推荐作品 -->
+  <section>
+    <h2 class="text-2xl font-bold mb-6 border-l-4 border-accent pl-3">相关同类作品推荐</h2>
+    <div id="relWrap" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+  </section>
+</main>
+
+<footer class="bg-primary text-white py-10 text-center text-sm text-gray-400">
+  <p>© 2026 设计师作品集</p>
+  <a href="works.html" class="mt-2 block">浏览更多作品</a>
+</footer>
+
+<script>
+document.getElementById('menuBtn').onclick = ()=>document.getElementById('mobileMenu').classList.toggle('hidden')
+const themeBtn = document.getElementById('themeSwitch');
+themeBtn.onclick = ()=>{
+  document.documentElement.classList.toggle('dark');
+  localStorage.theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+  themeBtn.querySelector('i').className = localStorage.theme === 'dark' ? 'fa fa-sun-o' : 'fa fa-moon-o';
+}
+window.addEventListener('scroll', ()=>{
+  const nav = document.getElementById('navbar');
+  window.scrollY > 50 ? nav.classList.add('shadow-md') : nav.classList.remove('shadow-md');
+})
+
+// 渲染详情多图
+const imgBox = document.getElementById('detailImgBox');
+workData.detail_imgs.forEach(url=>{
+  const img = document.createElement('img');
+  img.src = url;
+  img.className = "w-full rounded-xl mb-6 shadow-lg fade-in";
+  imgBox.appendChild(img);
+})
+
+// 加载同类推荐作品
+async function renderRelate(){
+  const {data} = await supabase.from('works').select('*');
+  const sameCat = data.filter(i=>i.category === workData.category && i.id !== workData.id).slice(0,2);
+  const wrap = document.getElementById('relWrap');
+  sameCat.forEach(item=>{
+    const div = document.createElement('div');
+    div.className = "bg-white dark:bg-gray-800 rounded-xl overflow-hidden cursor-pointer card-hover fade-in";
+    div.innerHTML = `
+      <img src="${item.cover_img}" class="w-full h-52 object-cover">
+      <div class="p-4">
+        <h4 class="font-bold">${item.title}</h4>
+        <span class="text-sm text-accent">${item.category}</span>
+      </div>
+    `;
+    div.onclick = ()=>{
+      localStorage.setItem('currentWork', JSON.stringify(item));
+      location.reload();
+    }
+    wrap.appendChild(div);
+  })
+}
+renderRelate();
+</script>
+</body>
+</html>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>关于我 | About</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    tailwind.config = {darkMode:"class",theme:{extend:{colors:{primary:"#1E293B",accent:"#22C55E"}}}}
+  </script>
+  <style type="text/tailwindcss">
+    @layer utilities {.glass { @apply backdrop-blur-md bg-white/70 dark:bg-primary/80; }.scroll-smooth { scroll-behavior: smooth; }.fade-in { animation: fadeIn 0.6s ease-out; } @keyframes fadeIn { from {opacity:0;transform:translateY(10px)} to {opacity:1;transform:translateY(0)} }}
+  </style>
+</head>
+<body class="scroll-smooth bg-gray-50 dark:bg-primary dark:text-gray-100">
+<script>
+const SUPABASE_URL = "你的SUPABASE_URL";
+const SUPABASE_ANON_KEY = "你的SUPABASE_ANON_KEY";
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+if(localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) document.documentElement.classList.add('dark')
+</script>
+
+<!-- 全局导航 -->
+<nav id="navbar" class="fixed w-full top-0 z-50 glass border-b dark:border-gray-700 transition-all">
+  <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+    <a href="index.html" class="text-2xl font-bold text-accent">DesignPortfolio</a>
+    <div class="hidden md:flex gap-8 items-center">
+      <a href="index.html">首页</a>
+      <a href="works.html">全部作品</a>
+      <a href="about.html" class="text-accent font-medium">关于我</a>
+    </div>
+    <div class="flex gap-4 items-center">
+      <button id="themeSwitch" class="text-xl"><i class="fa fa-moon-o"></i></button>
+      <button id="menuBtn" class="md:hidden text-xl"><i class="fa fa-bars"></i></button>
+    </div>
+  </div>
+  <div id="mobileMenu" class="hidden md:hidden px-6 pb-4 flex flex-col gap-4">
+    <a href="index.html">首页</a>
+    <a href="works.html">全部作品</a>
+    <a href="about.html">关于我</a>
+  </div>
+</nav>
+
+<!-- About Banner 头部横幅 -->
+<section class="pt-36 pb-16 bg-white dark:bg-gray-800 fade-in">
+  <div class="container mx-auto px-6 grid lg:grid-cols-2 gap-12 items-center">
+    <div>
+      <h1 class="text-4xl font-bold mb-6">你好，我是全职商业视觉设计师</h1>
+      <p class="text-gray-600 dark:text-gray-300 leading-relaxed">
+        拥有5年完整商业设计落地经验，深耕品牌全案、UI交互界面、产品包装与平面版式设计。坚持以市场需求、用户体验双核心创作，拒绝无效视觉堆砌，平衡创意美感、品牌调性与商业落地可行性，长期服务零售、文创、互联网科技类品牌。
+      </p>
+      <div class="flex flex-wrap gap-3 mt-8">
+        <span class="px-3 py-1 bg-accent/10 text-accent rounded-full">Figma</span>
+        <span class="px-3 py-1 bg-accent/10 text-accent rounded-full">Photoshop</span>
+        <span class="px-3 py-1 bg-accent/10 text-accent rounded-full">Illustrator</span>
+        <span class="px-3 py-1 bg-accent/10 text-accent rounded-full">C4D</span>
+      </div>
+    </div>
+    <div>
+      <img src="https://picsum.photos/id/1005/500/600" class="rounded-xl w-full shadow-xl">
+    </div>
+  </div>
+</section>
+
+<main class="container mx-auto px-6 py-20 max-w-4xl">
+  <!-- Skill Radar 专业技能进度条 -->
+  <section class="mb-20 fade-in">
+    <h2 class="text-2xl font-bold mb-8 border-l-4 border-accent pl-3">专业技能熟练度</h2>
+    <div class="grid md:grid-cols-2 gap-6">
+      <div class="p-6 bg-white dark:bg-gray-800 rounded-xl">
+        <h3 class="font-semibold mb-3">UI界面与交互设计</h3>
+        <div class="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+          <div class="h-full w-[90%] bg-accent"></div>
+        </div>
+      </div>
+      <div class="p-6 bg-white dark:bg-gray-800 rounded-xl">
+        <h3 class="font-semibold mb-3">品牌VI视觉全案</h3>
+        <div class="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+          <div class="h-full w-[85%] bg-accent"></div>
+        </div>
+      </div>
+      <div class="p-6 bg-white dark:bg-gray-800 rounded-xl">
+        <h3 class="font-semibold mb-3">平面海报与版式排版</h3>
+        <div class="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+          <div class="h-full w-[80%] bg-accent"></div>
+        </div>
+      </div>
+      <div class="p-6 bg-white dark:bg-gray-800 rounded-xl">
+        <h3 class="font-semibold mb-3">产品包装三维渲染</h3>
+        <div class="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+          <div class="h-full w-[75%] bg-accent"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Work Experience 时间线工作履历 -->
+  <section class="mb-20 fade-in">
+    <h2 class="text-2xl font-bold mb-8 border-l-4 border-accent pl-3">职业工作经历</h2>
+    <div class="border-l-2 border-gray-300 dark:border-gray-600 pl-6 space-y-10">
+      <div>
+        <p class="text-accent font-medium">2023 - 至今 | 资深视觉设计师</p>
+        <h4 class="text-lg font-bold mt-1">互联网科技企业</h4>
+        <p class="text-gray-500 mt-2">负责移动端APP、企业后台系统UI设计，搭建组件库与交互规范，协同研发完成视觉落地</p>
+      </div>
+      <div>
+        <p class="text-accent font-medium">2020 - 2023 | 品牌专职设计师</p>
+        <h4 class="text-lg font-bold mt-1">品牌创意设计工作室</h4>
+        <p class="text-gray-500 mt-2">承接餐饮、文创、零售品牌全案，LOGO、VI、包装、线下物料全套设计交付</p>
+      </div>
+      <div>
+        <p class="text-accent font-medium">2019 - 2020 | 初级设计实习生</p>
+        <h4 class="text-lg font-bold mt-1">综合广告传媒公司</h4>
+        <p class="text-gray-500 mt-2">平面海报、电商页面、宣传物料视觉执行，夯实版式与色彩基础</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Honor Certificate 获奖荣誉 -->
+  <section class="fade-in">
+    <h2 class="text-2xl font-bold mb-8 border-l-4 border-accent pl-3">赛事荣誉与资质</h2>
+    <div class="grid md:grid-cols-2 gap-6">
+      <div class="p-5 bg-white dark:bg-gray-800 rounded-xl flex gap-4 items-center">
+        <div class="text-accent text-3xl"><i class="fa fa-trophy"></i></div>
+        <div>
+          <h4 class="font-bold">全国文创设计大赛金奖</h4>
+          <p class="text-sm text-gray-500">2022</p>
+        </div>
+      </div>
+      <div class="p-5 bg-white dark:bg-gray-800 rounded-xl flex gap-4 items-center">
+        <div class="text-accent text-3xl"><i class="fa fa-award"></i></div>
+        <div>
+          <h4 class="font-bold">国际平面设计奖专业组入围</h4>
+          <p class="text-sm text-gray-500">2021</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="bg-primary text-white py-10 text-center text-sm text-gray-400">
+  <p>商务合作邮箱：design@xxx.com</p>
+  <a href="index.html" class="mt-2 block">返回网站首页</a>
+</footer>
+
+<script>
+document.getElementById('menuBtn').onclick = ()=>document.getElementById('mobileMenu').classList.toggle('hidden')
+const themeBtn = document.getElementById('themeSwitch');
+themeBtn.onclick = ()=>{
+  document.documentElement.classList.toggle('dark');
+  localStorage.theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+  themeBtn.querySelector('i').className = localStorage.theme === 'dark' ? 'fa fa-sun-o' : 'fa fa-moon-o';
+}
+window.addEventListener('scroll', ()=>{
+  const nav = document.getElementById('navbar');
+  window.scrollY > 50 ? nav.classList.add('shadow-md') : nav.classList.remove('shadow-md');
+})
+</script>
+</body>
+</html>
